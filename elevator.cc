@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <list>
+#include <set>
 #include <string>
 #include <algorithm>
 #include <limits.h>
@@ -28,7 +29,7 @@ class Lift {
 		bool scheduled_=false;
 
 		bool stopped = true;
-		std::list<int> stops;
+		std::set<int> stops;
 		bool scheduled() const  {
 			return scheduled_;
 		}
@@ -68,6 +69,33 @@ static void addPeopleIntoBuilding(unsigned curTime, std::list <AddPerson > &addP
 		addPeople.pop_front();
 	}
 }
+int calcDistance(int a, int b) {
+	if (a > b)
+		return a - b;
+	return b - a;
+
+}
+int findClosestLift(Person &curPerson, int curFloorNum, std::vector<Lift> &lifts ) {
+	int closestLift = -1;
+	unsigned cheapest_cost = INT_MAX;
+	for (unsigned curLiftNum =0;curLiftNum < lifts.size(); curLiftNum++) {
+		Lift &curLift= lifts[curLiftNum];
+		if (curLift.scheduled() ) {
+			std::cout << "lift " << curLiftNum << " already going to [";
+			std::for_each (curLift.stops.begin(), curLift.stops.end() , [] (int i){ std::cout << i << " ";});
+			std::cout << "] "<< std::endl;
+			if (curLift.scheduledFloor == curFloorNum && curLift.stops.count(curPerson.floorDesired) > 0 )
+				return -1;
+			continue;
+		}
+		unsigned distance = calcDistance(curLift.curfloor, curFloorNum);
+		if (distance < cheapest_cost) {
+			cheapest_cost = distance;
+			closestLift = curLiftNum;
+		}
+	}
+	return closestLift;
+}
 
 void scheduleLifts(Building & building) {
 	for(unsigned curFloorNum = 0; curFloorNum < building.floors.size(); curFloorNum++) {
@@ -78,35 +106,23 @@ void scheduleLifts(Building & building) {
 		std::list<Person>::iterator itr = curFloor.peopleWaiting.begin();
 		std::list<Person>::iterator eitr = curFloor.peopleWaiting.end();
 		while(itr != eitr) {
-			int closestLift = -1;
-			unsigned cheapest_cost = INT_MAX;
-			for (unsigned curLiftNum =0;curLiftNum < building.lifts.size(); curLiftNum++) {
-				Lift &curLift= building.lifts[curLiftNum];
-				unsigned distance;
-				if (curLift.scheduled() )
-					continue;
-				if (curLift.curfloor > curFloorNum)
-					distance = curLift.curfloor- curFloorNum;
-				else
-					distance = curFloorNum - curLift.curfloor;
-				if (distance < cheapest_cost) {
-					cheapest_cost = distance;
-					closestLift = curLiftNum;
-				}
-			}
+			int closestLift = findClosestLift(*itr, curFloorNum, building.lifts);
 			if (closestLift != -1) {
 				Lift &curLift= building.lifts[closestLift];
+				unsigned cheapest_cost= calcDistance(curLift.curfloor, curFloorNum);
 				if (cheapest_cost == 0 ) {
 					std::cout << itr->name << " boards lift " << closestLift << std::endl;
 					curLift.peopleRiding.push_back(*itr);
 					itr->remove=true;
 					curLift.scheduled_ =true;
 					curLift.scheduledFloor=itr->floorDesired;
+					curLift.stops.insert(itr->floorDesired);
 				}
 				else {
 					curLift.scheduled_ =true;
 					curLift.scheduledFloor=curFloorNum;
 					std::cout << closestLift << " going to  " << curFloorNum << std::endl;
+					curLift.stops.insert(itr->floorDesired);
 				}
 			}
 			itr++;
@@ -121,20 +137,26 @@ void moveLifts(Building &building) {
 	std::vector<Lift>::iterator eitr = building.lifts.end();
 	int i=0;
 	while (itr != eitr) {
-		std::cout<< "lift " << i << " at " <<itr->curfloor << " moved to ";
-		if (itr->curfloor < itr->scheduledFloor)
-			itr->curfloor++;
-		if (itr->curfloor > itr->scheduledFloor)
-			itr->curfloor--;
-		if (itr->curfloor == itr->scheduledFloor) {
-			itr->scheduled_=false;
-		}
-		std::cout<< itr->curfloor << std::endl;
-		itr->peopleRiding.remove_if ([&](Person & p ) {
-			if (itr->curfloor == p.floorDesired)
+		if (itr->scheduled_) {
+			int prev= itr->curfloor ;
+			if (itr->curfloor < itr->scheduledFloor)
+				itr->curfloor++;
+			if (itr->curfloor > itr->scheduledFloor)
+				itr->curfloor--;
+			if (itr->curfloor == itr->scheduledFloor) {
+				itr->scheduled_=false;
+			}
+			if (prev != itr->curfloor) {
+				std::cout<< "lift " << i << " at " <<prev << " moved to ";
+				std::cout<< itr->curfloor << std::endl;
+			}
+			itr->peopleRiding.remove_if ([&](Person & p ) {
+					if (itr->curfloor == p.floorDesired)
 					std::cout << p.name << " exits lift " << i << std::endl;
-			return itr->curfloor == p.floorDesired;
-		});
+					itr->stops.erase(itr->curfloor);
+					return itr->curfloor == p.floorDesired;
+					});
+		}
 		i++;
 		itr++;
 	}
@@ -146,7 +168,7 @@ int main(void) {
 	building.floors.resize(5);
 	building.lifts.resize(2);
 
-	unsigned maxTime = 10;
+	unsigned maxTime = 20;
 	std::list<AddPerson> addPeople;
 	addPeople.push_back(AddPerson("Jane", 0, 0, 4));
 	addPeople.push_back(AddPerson("Joe", 4, 2, 3));
