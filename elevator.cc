@@ -165,13 +165,15 @@ void moveLifts(Building &building) {
 int main(void) {
 	std::cout << "hello world" << std::endl;
 	Building building;
-	building.floors.resize(5);
+	building.floors.resize(20);
 	building.lifts.resize(2);
 
-	unsigned maxTime = 20;
+	unsigned maxTime = 60;
 	std::list<AddPerson> addPeople;
 	addPeople.push_back(AddPerson("Jane", 0, 0, 4));
 	addPeople.push_back(AddPerson("Joe", 4, 2, 3));
+	addPeople.push_back(AddPerson("Mark", 6, 12, 3));
+	addPeople.push_back(AddPerson("luke", 8, 14, 15));
 
 	for (unsigned curTime = 0; curTime < maxTime; curTime++) {
 		addPeopleIntoBuilding(curTime, addPeople, building);

@@ -5,5 +5,10 @@ elevator:elevator.cc Makefile
 run: elevator
 	./elevator
 
+test_output: elevator
+	./elevator > test_output
 
-.PHONY: run
+test:elevator test_output
+	diff test_expected test_output
+
+.PHONY: run test

@@ -1,0 +1,91 @@
+hello world
+at time 0 adding Jane floor 0 desired floor 4
+Jane boards lift 0
+lift 0 at 0 moved to 1
+lift 0 at 1 moved to 2
+lift 0 at 2 moved to 3
+lift 0 at 3 moved to 4
+Jane exits lift 0
+at time 4 adding Joe floor 2 desired floor 3
+0 going to  2
+lift 0 at 4 moved to 3
+lift 0 already going to [3 ] 
+lift 0 at 3 moved to 2
+at time 6 adding Mark floor 12 desired floor 3
+Joe boards lift 0
+lift 0 already going to [3 ] 
+1 going to  12
+lift 0 at 2 moved to 3
+Joe exits lift 0
+lift 1 at 0 moved to 1
+lift 1 already going to [3 ] 
+lift 1 at 1 moved to 2
+at time 8 adding luke floor 14 desired floor 15
+lift 1 already going to [3 ] 
+lift 1 already going to [3 ] 
+0 going to  14
+lift 0 at 3 moved to 4
+lift 1 at 2 moved to 3
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 4 moved to 5
+lift 1 at 3 moved to 4
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 5 moved to 6
+lift 1 at 4 moved to 5
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 6 moved to 7
+lift 1 at 5 moved to 6
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 7 moved to 8
+lift 1 at 6 moved to 7
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 8 moved to 9
+lift 1 at 7 moved to 8
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 9 moved to 10
+lift 1 at 8 moved to 9
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 10 moved to 11
+lift 1 at 9 moved to 10
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 11 moved to 12
+lift 1 at 10 moved to 11
+lift 0 already going to [15 ] 
+lift 1 already going to [3 ] 
+lift 0 already going to [15 ] 
+lift 0 at 12 moved to 13
+lift 1 at 11 moved to 12
+lift 0 already going to [15 ] 
+Mark boards lift 1
+lift 0 already going to [15 ] 
+lift 0 at 13 moved to 14
+lift 1 at 12 moved to 11
+lift 1 already going to [3 ] 
+luke boards lift 0
+lift 0 at 14 moved to 15
+luke exits lift 0
+lift 1 at 11 moved to 10
+lift 1 at 10 moved to 9
+lift 1 at 9 moved to 8
+lift 1 at 8 moved to 7
+lift 1 at 7 moved to 6
+lift 1 at 6 moved to 5
+lift 1 at 5 moved to 4
+lift 1 at 4 moved to 3
+Mark exits lift 1
