@@ -12,7 +12,7 @@
 class Person {
 	public :
 		std::string name;
-		int floorDesired;
+		unsigned floorDesired;
 		bool remove=false;
 		Person(std::string name_, int floorDesired_):name(name_), floorDesired(floorDesired_) { }
 		bool operator<(const Person & other) const  {
@@ -22,8 +22,11 @@ class Person {
 
 class Lift {
 	public:
+		Lift() {
+			id = nextId++;
+		}
+		int id;
 		std::list<Person> peopleRiding;
-		unsigned floors;
 		unsigned curfloor = 0;
 		unsigned scheduledFloor = 0;
 		bool scheduled_=false;
@@ -33,7 +36,11 @@ class Lift {
 		bool scheduled() const  {
 			return scheduled_;
 		}
+	private:
+		static int nextId;
+
 };
+int Lift::nextId=0;
 
 
 class Floor {
@@ -75,7 +82,7 @@ int calcDistance(int a, int b) {
 	return b - a;
 
 }
-int findClosestLift(Person &curPerson, int curFloorNum, std::vector<Lift> &lifts ) {
+int findClosestLift(Person &curPerson, unsigned curFloorNum, std::vector<Lift> &lifts ) {
 	int closestLift = -1;
 	unsigned cheapest_cost = INT_MAX;
 	for (unsigned curLiftNum =0;curLiftNum < lifts.size(); curLiftNum++) {
@@ -138,7 +145,7 @@ void moveLifts(Building &building) {
 	int i=0;
 	while (itr != eitr) {
 		if (itr->scheduled_) {
-			int prev= itr->curfloor ;
+			unsigned prev= itr->curfloor ;
 			if (itr->curfloor < itr->scheduledFloor)
 				itr->curfloor++;
 			if (itr->curfloor > itr->scheduledFloor)
