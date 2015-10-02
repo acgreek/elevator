@@ -25,7 +25,6 @@ class Lift {
 		Lift() {
 			id = nextId++;
 		}
-		int id;
 		std::list<Person> peopleRiding;
 		unsigned curfloor = 0;
 		unsigned scheduledFloor = 0;
@@ -36,7 +35,43 @@ class Lift {
 		bool scheduled() const  {
 			return scheduled_;
 		}
+		void personBoards(const Person & person) {
+			std::cout << person.name << " boards lift " << id << std::endl;
+			peopleRiding.push_back(person);
+			scheduled_ =true;
+			scheduledFloor=person.floorDesired;
+			stops.insert(person.floorDesired);
+		}
+		void schedule(unsigned pickupFloor, unsigned dropFloor) {
+			scheduled_ =true;
+			scheduledFloor=pickupFloor;
+			std::cout << id << " going to  " <<scheduledFloor << std::endl;
+			stops.insert(dropFloor);
+		}
+		void moveLift() {
+			if (scheduled_) {
+				unsigned prev= curfloor ;
+				if (curfloor < scheduledFloor)
+					curfloor++;
+				if (curfloor > scheduledFloor)
+					curfloor--;
+				if (curfloor == scheduledFloor) {
+					scheduled_=false;
+				}
+				if (prev != curfloor) {
+					std::cout<< "lift " << id << " at " <<prev << " moved to ";
+					std::cout<< curfloor << std::endl;
+				}
+				peopleRiding.remove_if ([&](Person & p ) {
+						if (curfloor == p.floorDesired)
+						std::cout << p.name << " exits lift " << id << std::endl;
+						stops.erase(curfloor);
+						return curfloor == p.floorDesired;
+						});
+			}
+		}
 	private:
+		int id;
 		static int nextId;
 
 };
@@ -118,18 +153,11 @@ void scheduleLifts(Building & building) {
 				Lift &curLift= building.lifts[closestLift];
 				unsigned cheapest_cost= calcDistance(curLift.curfloor, curFloorNum);
 				if (cheapest_cost == 0 ) {
-					std::cout << itr->name << " boards lift " << closestLift << std::endl;
-					curLift.peopleRiding.push_back(*itr);
+					curLift.personBoards(*itr);
 					itr->remove=true;
-					curLift.scheduled_ =true;
-					curLift.scheduledFloor=itr->floorDesired;
-					curLift.stops.insert(itr->floorDesired);
 				}
 				else {
-					curLift.scheduled_ =true;
-					curLift.scheduledFloor=curFloorNum;
-					std::cout << closestLift << " going to  " << curFloorNum << std::endl;
-					curLift.stops.insert(itr->floorDesired);
+					curLift.schedule(curFloorNum,itr->floorDesired);
 				}
 			}
 			itr++;
@@ -140,33 +168,7 @@ void scheduleLifts(Building & building) {
 	}
 }
 void moveLifts(Building &building) {
-	std::vector<Lift>::iterator itr = building.lifts.begin();
-	std::vector<Lift>::iterator eitr = building.lifts.end();
-	int i=0;
-	while (itr != eitr) {
-		if (itr->scheduled_) {
-			unsigned prev= itr->curfloor ;
-			if (itr->curfloor < itr->scheduledFloor)
-				itr->curfloor++;
-			if (itr->curfloor > itr->scheduledFloor)
-				itr->curfloor--;
-			if (itr->curfloor == itr->scheduledFloor) {
-				itr->scheduled_=false;
-			}
-			if (prev != itr->curfloor) {
-				std::cout<< "lift " << i << " at " <<prev << " moved to ";
-				std::cout<< itr->curfloor << std::endl;
-			}
-			itr->peopleRiding.remove_if ([&](Person & p ) {
-					if (itr->curfloor == p.floorDesired)
-					std::cout << p.name << " exits lift " << i << std::endl;
-					itr->stops.erase(itr->curfloor);
-					return itr->curfloor == p.floorDesired;
-					});
-		}
-		i++;
-		itr++;
-	}
+	std::for_each(building.lifts.begin(), building.lifts.end(), [](Lift &l) { l.moveLift();});
 }
 
 int main(void) {
