@@ -86,6 +86,14 @@ class Floor {
 
 class Building {
 	public:
+		Building & setFloors(int i) {
+			floors.resize(i);
+			return *this;
+		}
+		Building & setLifts(int i) {
+			lifts.resize(i);
+			return *this;
+		}
 		std::vector<Lift> lifts;
 		std::vector<Floor> floors;
 };
@@ -111,13 +119,13 @@ static void addPeopleIntoBuilding(unsigned curTime, std::list <AddPerson > &addP
 		addPeople.pop_front();
 	}
 }
-int calcDistance(int a, int b) {
+static int calcDistance(int a, int b) {
 	if (a > b)
 		return a - b;
 	return b - a;
 
 }
-int findClosestLift(Person &curPerson, unsigned curFloorNum, std::vector<Lift> &lifts ) {
+static int findClosestLift(Person &curPerson, unsigned curFloorNum, std::vector<Lift> &lifts ) {
 	int closestLift = -1;
 	unsigned cheapest_cost = INT_MAX;
 	for (unsigned curLiftNum =0;curLiftNum < lifts.size(); curLiftNum++) {
@@ -139,7 +147,7 @@ int findClosestLift(Person &curPerson, unsigned curFloorNum, std::vector<Lift> &
 	return closestLift;
 }
 
-void scheduleLifts(Building & building) {
+static void scheduleLifts(Building & building) {
 	for(unsigned curFloorNum = 0; curFloorNum < building.floors.size(); curFloorNum++) {
 		Floor &curFloor =  building.floors[curFloorNum];
 		if (0 == curFloor.peopleWaiting.size() ) {
@@ -167,19 +175,12 @@ void scheduleLifts(Building & building) {
 		});
 	}
 }
-void moveLifts(Building &building) {
+
+static void moveLifts(Building &building) {
 	std::for_each(building.lifts.begin(), building.lifts.end(), [](Lift &l) { l.moveLift();});
 }
 
-
-int main(void) {
-	std::cout << "hello world" << std::endl;
-	Building building;
-	building.floors.resize(20);
-	building.lifts.resize(2);
-
-	unsigned maxTime = 60;
-	std::list<AddPerson> addPeople;
+static void loadPeople(std::list<AddPerson> & addPeople) {
 	char name[21];
 	int entertime;
 	int startfloor;
@@ -187,6 +188,15 @@ int main(void) {
 	while (EOF != std::scanf("%20s %d %d %d\n", name, &entertime, &startfloor, &endfloor)) {
 		addPeople.push_back(AddPerson(name, entertime, startfloor, endfloor));
 	}
+}
+
+int main(void) {
+	std::cout << "hello world" << std::endl;
+	Building building;
+	building.setFloors(20).setLifts(2);
+	unsigned maxTime = 60;
+	std::list<AddPerson> addPeople;
+	loadPeople (addPeople);
 	for (unsigned curTime = 0; curTime < maxTime; curTime++) {
 		addPeopleIntoBuilding(curTime, addPeople, building);
 		scheduleLifts(building);
