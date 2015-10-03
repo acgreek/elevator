@@ -171,6 +171,7 @@ void moveLifts(Building &building) {
 	std::for_each(building.lifts.begin(), building.lifts.end(), [](Lift &l) { l.moveLift();});
 }
 
+
 int main(void) {
 	std::cout << "hello world" << std::endl;
 	Building building;
@@ -179,11 +180,13 @@ int main(void) {
 
 	unsigned maxTime = 60;
 	std::list<AddPerson> addPeople;
-	addPeople.push_back(AddPerson("Jane", 0, 0, 4));
-	addPeople.push_back(AddPerson("Joe", 4, 2, 3));
-	addPeople.push_back(AddPerson("Mark", 6, 12, 3));
-	addPeople.push_back(AddPerson("luke", 8, 14, 15));
-
+	char name[21];
+	int entertime;
+	int startfloor;
+	int endfloor;
+	while (EOF != std::scanf("%20s %d %d %d\n", name, &entertime, &startfloor, &endfloor)) {
+		addPeople.push_back(AddPerson(name, entertime, startfloor, endfloor));
+	}
 	for (unsigned curTime = 0; curTime < maxTime; curTime++) {
 		addPeopleIntoBuilding(curTime, addPeople, building);
 		scheduleLifts(building);
