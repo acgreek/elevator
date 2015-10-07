@@ -29,7 +29,6 @@ class Lift {
 		unsigned curfloor = 0;
 		unsigned scheduledFloor = 0;
 		bool scheduled_=false;
-
 		bool stopped = true;
 		std::set<int> stops;
 		bool scheduled() const  {
@@ -48,7 +47,7 @@ class Lift {
 			std::cout << id << " going to  " <<scheduledFloor << std::endl;
 			stops.insert(dropFloor);
 		}
-		void moveLift() {
+		void moveLift(std::list<Person> & peopleExited) {
 			if (scheduled_) {
 				unsigned prev= curfloor ;
 				if (curfloor < scheduledFloor)
@@ -63,8 +62,10 @@ class Lift {
 					std::cout<< curfloor << std::endl;
 				}
 				peopleRiding.remove_if ([&](Person & p ) {
-						if (curfloor == p.floorDesired)
-						std::cout << p.name << " exits lift " << id << std::endl;
+						if (curfloor == p.floorDesired) {
+							std::cout << p.name << " exits lift " << id << std::endl;
+							peopleExited.push_back(p);
+						}
 						stops.erase(curfloor);
 						return curfloor == p.floorDesired;
 						});
@@ -176,8 +177,8 @@ static void scheduleLifts(Building & building) {
 	}
 }
 
-static void moveLifts(Building &building) {
-	std::for_each(building.lifts.begin(), building.lifts.end(), [](Lift &l) { l.moveLift();});
+static void moveLifts(Building &building,std::list<Person> & peopleExited) {
+	std::for_each(building.lifts.begin(), building.lifts.end(), [&peopleExited](Lift &l) { l.moveLift(peopleExited);});
 }
 
 static void loadPeople(std::list<AddPerson> & addPeople) {
@@ -191,17 +192,19 @@ static void loadPeople(std::list<AddPerson> & addPeople) {
 }
 
 int main(void) {
-	std::cout << "hello world" << std::endl;
 	Building building;
 	building.setFloors(20).setLifts(2);
 	unsigned maxTime = 60;
 	std::list<AddPerson> addPeople;
 	loadPeople (addPeople);
+	int num_people = addPeople.size();
+	std::list<Person> peopleExited;
 	for (unsigned curTime = 0; curTime < maxTime; curTime++) {
 		addPeopleIntoBuilding(curTime, addPeople, building);
 		scheduleLifts(building);
-		moveLifts(building);
+		moveLifts(building, peopleExited);
 	}
+	std::cout << "input " << num_people <<" " << peopleExited.size() << std::endl;
 	return 0;
 }
 

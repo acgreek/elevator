@@ -15,7 +15,7 @@ test1:elevator test_output1
 	diff test_expected test_output1
 
 test2:elevator test_output2
-	diff test_expected test_output2
+	diff test_expected2 test_output2
 
 test: test1 test2
 
