@@ -10,13 +10,27 @@
 #include <assert.h>
 
 class Person {
-	public :
-		std::string name;
-		unsigned floorDesired;
-		bool remove=false;
-		Person(std::string name_, int floorDesired_):name(name_), floorDesired(floorDesired_) { }
+	public:
+		Person(std::string name, int floorDesired):name_(name), floorDesired_(floorDesired) { }
+		const std::string name(void) const {
+			return name_;
+		}
+		unsigned floorDesired(void) const {
+			return floorDesired_;
+		}
+		bool remove() const  {
+			return remove_;
+		}
+		void set_remove(bool v) {
+			remove_=v;
+		}
+
+	private:
+		std::string name_;
+		unsigned floorDesired_;
+		bool remove_=false;
 		bool operator<(const Person & other) const  {
-			return 0< name.compare(other.name);
+			return 0< name_.compare(other.name_);
 		}
 };
 
@@ -35,11 +49,11 @@ class Lift {
 			return scheduled_;
 		}
 		void personBoards(const Person & person) {
-			std::cout << person.name << " boards lift " << id << std::endl;
+			std::cout << person.name() << " boards lift " << id << std::endl;
 			peopleRiding.push_back(person);
 			scheduled_ =true;
-			scheduledFloor=person.floorDesired;
-			stops.insert(person.floorDesired);
+			scheduledFloor=person.floorDesired();
+			stops.insert(person.floorDesired());
 		}
 		void schedule(unsigned pickupFloor, unsigned dropFloor) {
 			scheduled_ =true;
@@ -62,12 +76,12 @@ class Lift {
 					std::cout<< curfloor << std::endl;
 				}
 				peopleRiding.remove_if ([&](Person & p ) {
-						if (curfloor == p.floorDesired) {
-							std::cout << p.name << " exits lift " << id << std::endl;
+						if (curfloor == p.floorDesired()) {
+							std::cout << p.name() << " exits lift " << id << std::endl;
 							peopleExited.push_back(p);
 						}
 						stops.erase(curfloor);
-						return curfloor == p.floorDesired;
+						return curfloor == p.floorDesired();
 						});
 			}
 		}
@@ -135,7 +149,7 @@ static int findClosestLift(Person &curPerson, unsigned curFloorNum, std::vector<
 			std::cout << "lift " << curLiftNum << " already going to [";
 			std::for_each (curLift.stops.begin(), curLift.stops.end() , [] (int i){ std::cout << i << " ";});
 			std::cout << "] "<< std::endl;
-			if (curLift.scheduledFloor == curFloorNum && curLift.stops.count(curPerson.floorDesired) > 0 )
+			if (curLift.scheduledFloor == curFloorNum && curLift.stops.count(curPerson.floorDesired()) > 0 )
 				return -1;
 			continue;
 		}
@@ -163,16 +177,16 @@ static void scheduleLifts(Building & building) {
 				unsigned cheapest_cost= calcDistance(curLift.curfloor, curFloorNum);
 				if (cheapest_cost == 0 ) {
 					curLift.personBoards(*itr);
-					itr->remove=true;
+					itr->set_remove(true);
 				}
 				else {
-					curLift.schedule(curFloorNum,itr->floorDesired);
+					curLift.schedule(curFloorNum,itr->floorDesired());
 				}
 			}
 			itr++;
 		}
 		curFloor.peopleWaiting.remove_if ([&](Person & p ) {
-				return p.remove;
+				return p.remove();
 		});
 	}
 }
