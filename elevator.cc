@@ -1,4 +1,5 @@
 /* vim: set ts=2 noet*/
+#include <cstdio>
 #include <iostream>
 #include <vector>
 #include <list>
